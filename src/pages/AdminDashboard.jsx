@@ -89,18 +89,28 @@ function AdminDashboard() {
   };
 
   if (authLoading) {
-    return <div style={pageStyle}>Loading admin...</div>;
+    return (
+      <div className="admin-dashboard-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div>Loading admin...</div>
+      </div>
+    );
   }
 
   if (!user) {
-    return <div style={pageStyle}>Please login first</div>;
+    return (
+      <div className="admin-dashboard-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div>Please login first</div>
+      </div>
+    );
   }
 
   if (user.email !== ADMIN_EMAIL) {
     return (
-      <div style={pageStyle}>
-        <h1>Access Denied ❌</h1>
-        <p>You are not allowed to view this page.</p>
+      <div className="admin-dashboard-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ color: '#ef4444', marginBottom: '16px' }}>Access Denied ❌</h1>
+          <p style={{ color: '#94a3b8' }}>You are not allowed to view this page.</p>
+        </div>
       </div>
     );
   }
