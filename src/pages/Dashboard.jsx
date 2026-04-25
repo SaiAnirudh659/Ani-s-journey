@@ -158,47 +158,86 @@ function Dashboard() {
 
   return (
     <div className="dashboard-page">
+      {/* Top Navigation */}
       <div className="dashboard-nav">
         <div className="nav-brand">
-          <h1>Sai Anirudh Kasarla Journey ☺️</h1>
+          <h1>🚀 Sai Anirudh Kasarla Journey</h1>
         </div>
-
-        <div className="nav-buttons">
-          {isAdmin && (
-            <button className="nav-button" onClick={() => navigate("/admin")}>
-              Admin Dashboard
+        <div className="nav-actions">
+          <div className="user-welcome">
+            <span>Welcome back, {user.displayName?.split(' ')[0] || 'User'}!</span>
+          </div>
+          <div className="nav-buttons">
+            {isAdmin && (
+              <button className="nav-button" onClick={() => navigate("/admin")}>
+                Admin Panel
+              </button>
+            )}
+            <button className="logout-button" onClick={handleLogout}>
+              Sign Out
             </button>
-          )}
-
-          <button className="logout-button" onClick={handleLogout}>
-            Logout
-          </button>
+          </div>
         </div>
       </div>
 
-      <div className="content-container">
-        <div className="left-panel">
-          <div className="user-info">
-            <h2>Welcome back!</h2>
-            <div className="user-details">
-              <p><strong>Name:</strong> {user.displayName || "No Name"}</p>
-              <p><strong>Email:</strong> {user.email || "No Email"}</p>
-              <p><strong>Phone:</strong> {user.phoneNumber || "No Phone"}</p>
+      {/* Main Dashboard Layout */}
+      <div className="dashboard-main">
+        {/* Sidebar */}
+        <div className="dashboard-sidebar">
+          <div className="sidebar-section">
+            <h3>📊 Overview</h3>
+            <div className="stats-grid">
+              <div className="stat-card">
+                <div className="stat-icon">🎯</div>
+                <div className="stat-content">
+                  <div className="stat-number">{Object.keys(applications).length}</div>
+                  <div className="stat-label">Jobs Applied</div>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">⏳</div>
+                <div className="stat-content">
+                  <div className="stat-number">
+                    {Object.values(applications).filter(status => status === 'Interview').length}
+                  </div>
+                  <div className="stat-label">Interviews</div>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">✅</div>
+                <div className="stat-content">
+                  <div className="stat-number">
+                    {Object.values(applications).filter(status => status === 'Selected').length}
+                  </div>
+                  <div className="stat-label">Selected</div>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="mission-section">
-            <h2>Today's Mission</h2>
-            <ul className="mission-list">
-              <li>Apply to 5 jobs</li>
-              <li>Apply to 2 remote jobs</li>
-              <li>Update your job application status</li>
-            </ul>
+          <div className="sidebar-section">
+            <h3>🎯 Today's Mission</h3>
+            <div className="mission-card">
+              <ul className="mission-list">
+                <li className="mission-item">
+                  <span className="mission-icon">📝</span>
+                  Apply to 5 jobs
+                </li>
+                <li className="mission-item">
+                  <span className="mission-icon">🏠</span>
+                  Apply to 2 remote jobs
+                </li>
+                <li className="mission-item">
+                  <span className="mission-icon">📊</span>
+                  Update application status
+                </li>
+              </ul>
+            </div>
           </div>
 
           {isAdmin && (
-            <div className="admin-section">
-              <h2>Add New Job (Admin)</h2>
+            <div className="sidebar-section">
+              <h3>⚙️ Admin Controls</h3>
               <div className="admin-form">
                 <input
                   className="input-field"
@@ -206,76 +245,82 @@ function Dashboard() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                 />
-
                 <input
                   className="input-field"
                   placeholder="Company Name"
                   value={company}
                   onChange={(e) => setCompany(e.target.value)}
                 />
-
                 <input
                   className="input-field"
                   placeholder="Job Link"
                   value={link}
                   onChange={(e) => setLink(e.target.value)}
                 />
-
                 <button className="primary-button" onClick={addJob}>
-                  Add Job
+                  ➕ Add Job
                 </button>
               </div>
             </div>
           )}
         </div>
 
-        <div className="right-panel">
-          <div className="jobs-section">
-            <h2>Available Jobs</h2>
+        {/* Main Content */}
+        <div className="dashboard-content">
+          <div className="content-header">
+            <h2>💼 Available Opportunities</h2>
+            <div className="content-stats">
+              <span>{jobs.length} jobs available</span>
+            </div>
+          </div>
 
+          <div className="jobs-container">
             {jobs.length === 0 ? (
               <div className="empty-state">
-                <p>No jobs available right now. Check back later!</p>
+                <div className="empty-icon">🔍</div>
+                <h3>No jobs available right now</h3>
+                <p>Check back later for new opportunities!</p>
               </div>
             ) : (
               <div className="jobs-grid">
                 {jobs.map((job) => (
                   <div key={job.id} className="job-card">
-                    <div className="card-header">
+                    <div className="job-header">
+                      <div className="job-company">
+                        <span className="company-badge">{job.company}</span>
+                      </div>
+                      {isAdmin && (
+                        <button className="delete-button" onClick={() => deleteJob(job.id)}>
+                          🗑️
+                        </button>
+                      )}
+                    </div>
+
+                    <div className="job-content">
                       <h3 className="job-title">{job.title}</h3>
-                      <p className="company-name">{job.company}</p>
+                      <div className="job-actions">
+                        <a href={job.link} target="_blank" rel="noreferrer" className="apply-link">
+                          🚀 Apply Now
+                        </a>
+                      </div>
                     </div>
 
-                    <div className="card-actions">
-                      <a href={job.link} target="_blank" rel="noreferrer" className="apply-link">
-                        Apply Here →
-                      </a>
-                    </div>
-
-                    <div className="status-section">
-                      <p className="status-label">Application Status:</p>
+                    <div className="job-status">
+                      <div className="status-label">
+                        Application Status: <span className="current-status">{applications[job.id] || 'Not Applied'}</span>
+                      </div>
                       <div className="status-buttons">
                         {["Applied", "Not Applied", "Interview", "Rejected", "Selected"].map((status) => (
                           <button
                             key={status}
-                            className="status-button"
+                            className={`status-button ${applications[job.id] === status ? 'active' : ''}`}
                             onClick={() => updateStatus(job.id, status)}
-                            style={{
-                              background: applications[job.id] === status ? "#2563eb" : "#374151",
-                              color: applications[job.id] === status ? "white" : "#d1d5db",
-                            }}
                           >
                             {status}
                           </button>
                         ))}
                       </div>
                     </div>
-
-                    {isAdmin && (
-                      <button className="delete-button" onClick={() => deleteJob(job.id)}>
-                        Delete Job
-                      </button>
-                    )}
                   </div>
                 ))}
               </div>
