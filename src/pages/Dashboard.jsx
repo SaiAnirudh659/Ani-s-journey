@@ -160,7 +160,7 @@ function Dashboard() {
     <div className="dashboard-page">
       <div className="dashboard-nav">
         <div className="nav-brand">
-          <h1>Ani's Journey ☺️</h1>
+          <h1>Sai Anirudh Kasarla Journey ☺️</h1>
         </div>
 
         <div className="nav-buttons">
