@@ -85,9 +85,10 @@
   margin: 0 auto;
   padding: 32px;
   display: grid;
-  grid-template-columns: 1fr 2fr;
+  grid-template-columns: 400px 1fr;
   gap: 32px;
   min-height: calc(100vh - 120px);
+  align-items: start;
 }
 
 .left-panel {
@@ -95,12 +96,14 @@
   flex-direction: column;
   gap: 24px;
   height: fit-content;
+  min-height: 100%;
 }
 
 .right-panel {
   display: flex;
   flex-direction: column;
   height: fit-content;
+  min-height: 100%;
 }
 
 .user-info, .mission-section, .admin-section, .jobs-section, .job-card, .empty-state {
@@ -400,7 +403,7 @@
 }
 
 /* Responsive Design */
-@media (max-width: 1024px) {
+@media (max-width: 1400px) {
   .content-container {
     grid-template-columns: 1fr;
     gap: 24px;
