@@ -5,7 +5,7 @@
 body {
   margin: 0;
   font-family: Arial, sans-serif;
-  background: #0f172a;
+  background: #000000;
 }
 
 .login-page {
@@ -14,7 +14,7 @@ body {
   align-items: center;
   justify-content: center;
   padding: 20px;
-  background: linear-gradient(135deg, #0f172a, #1e293b);
+  background: #000000;
 }
 
 .login-container {

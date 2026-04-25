@@ -31,11 +31,7 @@ function Login() {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
-  const [quoteIndex, setQuoteIndex] = useState(Math.floor(Math.random() * quotes.length));
-
-  const refreshQuote = () => {
-    setQuoteIndex(Math.floor(Math.random() * quotes.length));
-  };
+  const [quoteIndex] = useState(Math.floor(Math.random() * quotes.length));
 
   const handleGoogleLogin = async () => {
     try {
@@ -106,9 +102,6 @@ function Login() {
           <div className="quote-content">
             <div className="quote-wrapper">
               <p className="quote-text">"{quotes[quoteIndex]}"</p>
-              <button onClick={refreshQuote} className="refresh-btn">
-                🔄 New Quote
-              </button>
             </div>
             <div className="quote-design-elements">
               <div className="design-accent-top"></div>
