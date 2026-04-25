@@ -190,7 +190,9 @@ function Dashboard() {
               <div className="stat-card">
                 <div className="stat-icon">🎯</div>
                 <div className="stat-content">
-                  <div className="stat-number">{Object.keys(applications).length}</div>
+                  <div className="stat-number">
+                    {Object.values(applications).filter(status => status === 'Applied').length}
+                  </div>
                   <div className="stat-label">Jobs Applied</div>
                 </div>
               </div>
