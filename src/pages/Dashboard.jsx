@@ -13,6 +13,7 @@ import {
   deleteDoc,
   serverTimestamp,
 } from "firebase/firestore";
+import "./Dashboard.css";
 
 const ADMIN_EMAIL = "kasarlasai235@gmail.com";
 
@@ -27,6 +28,29 @@ function Dashboard() {
   const [title, setTitle] = useState("");
   const [company, setCompany] = useState("");
   const [link, setLink] = useState("");
+
+  const fetchJobs = async () => {
+    const snapshot = await getDocs(collection(db, "jobs"));
+
+    const jobsData = snapshot.docs.map((docSnap) => ({
+      id: docSnap.id,
+      ...docSnap.data(),
+    }));
+
+    setJobs(jobsData);
+  };
+
+  const fetchApplications = async (userId) => {
+    const q = query(collection(db, "applications"), where("userId", "==", userId));
+    const snapshot = await getDocs(q);
+
+    const apps = {};
+    snapshot.docs.forEach((docSnap) => {
+      apps[docSnap.data().jobId] = docSnap.data().status;
+    });
+
+    setApplications(apps);
+  };
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
@@ -54,29 +78,6 @@ function Dashboard() {
 
     return () => unsubscribe();
   }, []);
-
-  const fetchJobs = async () => {
-    const snapshot = await getDocs(collection(db, "jobs"));
-
-    const jobsData = snapshot.docs.map((docSnap) => ({
-      id: docSnap.id,
-      ...docSnap.data(),
-    }));
-
-    setJobs(jobsData);
-  };
-
-  const fetchApplications = async (userId) => {
-    const q = query(collection(db, "applications"), where("userId", "==", userId));
-    const snapshot = await getDocs(q);
-
-    const apps = {};
-    snapshot.docs.forEach((docSnap) => {
-      apps[docSnap.data().jobId] = docSnap.data().status;
-    });
-
-    setApplications(apps);
-  };
 
   const addJob = async () => {
     if (!title || !company || !link) {
@@ -152,185 +153,134 @@ function Dashboard() {
   };
 
   if (!user) {
-    return <div style={pageStyle}>Please login first</div>;
+    return <div className="dashboard-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>Please login first</div>;
   }
 
   return (
-    <div style={pageStyle}>
-      <div style={navStyle}>
-        <h1>Ani's Journey ☺️</h1>
+    <div className="dashboard-page">
+      <div className="dashboard-nav">
+        <div className="nav-brand">
+          <h1>Ani's Journey ☺️</h1>
+        </div>
 
-        <div>
+        <div className="nav-buttons">
           {isAdmin && (
-            <button onClick={() => navigate("/admin")} style={navButtonStyle}>
+            <button className="nav-button" onClick={() => navigate("/admin")}>
               Admin Dashboard
             </button>
           )}
 
-          <button onClick={handleLogout} style={logoutButtonStyle}>
+          <button className="logout-button" onClick={handleLogout}>
             Logout
           </button>
         </div>
       </div>
 
-      <p><b>Name:</b> {user.displayName || "No Name"}</p>
-      <p><b>Email:</b> {user.email || "No Email"}</p>
-      <p><b>Phone:</b> {user.phoneNumber || "No Phone"}</p>
+      <div className="content-container">
+        <div className="user-info">
+          <h2>Welcome back!</h2>
+          <div className="user-details">
+            <p><strong>Name:</strong> {user.displayName || "No Name"}</p>
+            <p><strong>Email:</strong> {user.email || "No Email"}</p>
+            <p><strong>Phone:</strong> {user.phoneNumber || "No Phone"}</p>
+          </div>
+        </div>
 
-      <h2>Today's Mission</h2>
-      <ul>
-        <li>Apply 5 jobs</li>
-        <li>Apply 2 remote jobs</li>
-        <li>Update your job status</li>
-      </ul>
+        <div className="mission-section">
+          <h2>Today's Mission</h2>
+          <ul className="mission-list">
+            <li>Apply to 5 jobs</li>
+            <li>Apply to 2 remote jobs</li>
+            <li>Update your job application status</li>
+          </ul>
+        </div>
 
-      {isAdmin && (
-        <>
-          <h2>Add Job (Admin)</h2>
+        {isAdmin && (
+          <div className="admin-section">
+            <h2>Add New Job (Admin)</h2>
+            <div className="admin-form">
+              <input
+                className="input-field"
+                placeholder="Job Title"
+                value={title}
+                onChange={(e) => setTitle(e.target.value)}
+              />
 
-          <input
-            placeholder="Job Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            style={inputStyle}
-          />
+              <input
+                className="input-field"
+                placeholder="Company Name"
+                value={company}
+                onChange={(e) => setCompany(e.target.value)}
+              />
 
-          <input
-            placeholder="Company"
-            value={company}
-            onChange={(e) => setCompany(e.target.value)}
-            style={inputStyle}
-          />
+              <input
+                className="input-field"
+                placeholder="Job Link"
+                value={link}
+                onChange={(e) => setLink(e.target.value)}
+              />
 
-          <input
-            placeholder="Job Link"
-            value={link}
-            onChange={(e) => setLink(e.target.value)}
-            style={inputStyle}
-          />
+              <button className="primary-button" onClick={addJob}>
+                Add Job
+              </button>
+            </div>
+          </div>
+        )}
 
-          <button onClick={addJob} style={buttonStyle}>
-            Add Job
-          </button>
-        </>
-      )}
+        <div className="jobs-section">
+          <h2>Available Jobs</h2>
 
-      <h2>Available Jobs</h2>
+          {jobs.length === 0 ? (
+            <div className="empty-state">
+              <p>No jobs available right now. Check back later!</p>
+            </div>
+          ) : (
+            <div className="jobs-grid">
+              {jobs.map((job) => (
+                <div key={job.id} className="job-card">
+                  <div className="card-header">
+                    <h3 className="job-title">{job.title}</h3>
+                    <p className="company-name">{job.company}</p>
+                  </div>
 
-      {jobs.length === 0 ? (
-        <p>No jobs available right now.</p>
-      ) : (
-        jobs.map((job) => (
-          <div key={job.id} style={cardStyle}>
-            <h3>{job.title}</h3>
-            <p>{job.company}</p>
+                  <div className="card-actions">
+                    <a href={job.link} target="_blank" rel="noreferrer" className="apply-link">
+                      Apply Here →
+                    </a>
+                  </div>
 
-            <a href={job.link} target="_blank" rel="noreferrer" style={{ color: "#60a5fa" }}>
-              Apply Here
-            </a>
+                  <div className="status-section">
+                    <p className="status-label">Application Status:</p>
+                    <div className="status-buttons">
+                      {["Applied", "Not Applied", "Interview", "Rejected", "Selected"].map((status) => (
+                        <button
+                          key={status}
+                          className="status-button"
+                          onClick={() => updateStatus(job.id, status)}
+                          style={{
+                            background: applications[job.id] === status ? "#2563eb" : "#374151",
+                            color: applications[job.id] === status ? "white" : "#d1d5db",
+                          }}
+                        >
+                          {status}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
 
-            <div style={{ marginTop: "10px" }}>
-              {["Applied", "Not Applied", "Interview", "Rejected", "Selected"].map((status) => (
-                <button
-                  key={status}
-                  onClick={() => updateStatus(job.id, status)}
-                  style={{
-                    marginRight: "5px",
-                    padding: "6px 10px",
-                    borderRadius: "8px",
-                    border: "none",
-                    cursor: "pointer",
-                    background: applications[job.id] === status ? "#2563eb" : "#e5e7eb",
-                    color: applications[job.id] === status ? "white" : "#111827",
-                  }}
-                >
-                  {status}
-                </button>
+                  {isAdmin && (
+                    <button className="delete-button" onClick={() => deleteJob(job.id)}>
+                      Delete Job
+                    </button>
+                  )}
+                </div>
               ))}
             </div>
-
-            <p><b>Status:</b> {applications[job.id] || "Not Applied"}</p>
-
-            {isAdmin && (
-              <button onClick={() => deleteJob(job.id)} style={deleteButtonStyle}>
-                Delete Job
-              </button>
-            )}
-          </div>
-        ))
-      )}
+          )}
+        </div>
+      </div>
     </div>
   );
 }
-
-const pageStyle = {
-  minHeight: "100vh",
-  padding: "40px",
-  background: "#0f172a",
-  color: "white",
-};
-
-const navStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  marginBottom: "25px",
-};
-
-const navButtonStyle = {
-  padding: "10px 14px",
-  marginRight: "10px",
-  borderRadius: "10px",
-  border: "none",
-  background: "#2563eb",
-  color: "white",
-  cursor: "pointer",
-};
-
-const logoutButtonStyle = {
-  padding: "10px 14px",
-  borderRadius: "10px",
-  border: "none",
-  background: "#dc2626",
-  color: "white",
-  cursor: "pointer",
-};
-
-const inputStyle = {
-  display: "block",
-  width: "100%",
-  marginBottom: "10px",
-  padding: "12px",
-  borderRadius: "10px",
-  border: "none",
-};
-
-const buttonStyle = {
-  width: "100%",
-  padding: "12px",
-  background: "#2563eb",
-  color: "white",
-  border: "none",
-  borderRadius: "10px",
-  marginBottom: "20px",
-  cursor: "pointer",
-};
-
-const deleteButtonStyle = {
-  marginTop: "10px",
-  padding: "8px 12px",
-  borderRadius: "8px",
-  border: "none",
-  background: "#dc2626",
-  color: "white",
-  cursor: "pointer",
-};
-
-const cardStyle = {
-  background: "#1e293b",
-  padding: "15px",
-  marginTop: "10px",
-  borderRadius: "10px",
-};
 
 export default Dashboard;
