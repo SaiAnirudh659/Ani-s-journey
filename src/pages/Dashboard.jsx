@@ -177,106 +177,110 @@ function Dashboard() {
       </div>
 
       <div className="content-container">
-        <div className="user-info">
-          <h2>Welcome back!</h2>
-          <div className="user-details">
-            <p><strong>Name:</strong> {user.displayName || "No Name"}</p>
-            <p><strong>Email:</strong> {user.email || "No Email"}</p>
-            <p><strong>Phone:</strong> {user.phoneNumber || "No Phone"}</p>
-          </div>
-        </div>
-
-        <div className="mission-section">
-          <h2>Today's Mission</h2>
-          <ul className="mission-list">
-            <li>Apply to 5 jobs</li>
-            <li>Apply to 2 remote jobs</li>
-            <li>Update your job application status</li>
-          </ul>
-        </div>
-
-        {isAdmin && (
-          <div className="admin-section">
-            <h2>Add New Job (Admin)</h2>
-            <div className="admin-form">
-              <input
-                className="input-field"
-                placeholder="Job Title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-
-              <input
-                className="input-field"
-                placeholder="Company Name"
-                value={company}
-                onChange={(e) => setCompany(e.target.value)}
-              />
-
-              <input
-                className="input-field"
-                placeholder="Job Link"
-                value={link}
-                onChange={(e) => setLink(e.target.value)}
-              />
-
-              <button className="primary-button" onClick={addJob}>
-                Add Job
-              </button>
+        <div className="left-panel">
+          <div className="user-info">
+            <h2>Welcome back!</h2>
+            <div className="user-details">
+              <p><strong>Name:</strong> {user.displayName || "No Name"}</p>
+              <p><strong>Email:</strong> {user.email || "No Email"}</p>
+              <p><strong>Phone:</strong> {user.phoneNumber || "No Phone"}</p>
             </div>
           </div>
-        )}
 
-        <div className="jobs-section">
-          <h2>Available Jobs</h2>
+          <div className="mission-section">
+            <h2>Today's Mission</h2>
+            <ul className="mission-list">
+              <li>Apply to 5 jobs</li>
+              <li>Apply to 2 remote jobs</li>
+              <li>Update your job application status</li>
+            </ul>
+          </div>
 
-          {jobs.length === 0 ? (
-            <div className="empty-state">
-              <p>No jobs available right now. Check back later!</p>
-            </div>
-          ) : (
-            <div className="jobs-grid">
-              {jobs.map((job) => (
-                <div key={job.id} className="job-card">
-                  <div className="card-header">
-                    <h3 className="job-title">{job.title}</h3>
-                    <p className="company-name">{job.company}</p>
-                  </div>
+          {isAdmin && (
+            <div className="admin-section">
+              <h2>Add New Job (Admin)</h2>
+              <div className="admin-form">
+                <input
+                  className="input-field"
+                  placeholder="Job Title"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                />
 
-                  <div className="card-actions">
-                    <a href={job.link} target="_blank" rel="noreferrer" className="apply-link">
-                      Apply Here →
-                    </a>
-                  </div>
+                <input
+                  className="input-field"
+                  placeholder="Company Name"
+                  value={company}
+                  onChange={(e) => setCompany(e.target.value)}
+                />
 
-                  <div className="status-section">
-                    <p className="status-label">Application Status:</p>
-                    <div className="status-buttons">
-                      {["Applied", "Not Applied", "Interview", "Rejected", "Selected"].map((status) => (
-                        <button
-                          key={status}
-                          className="status-button"
-                          onClick={() => updateStatus(job.id, status)}
-                          style={{
-                            background: applications[job.id] === status ? "#2563eb" : "#374151",
-                            color: applications[job.id] === status ? "white" : "#d1d5db",
-                          }}
-                        >
-                          {status}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
+                <input
+                  className="input-field"
+                  placeholder="Job Link"
+                  value={link}
+                  onChange={(e) => setLink(e.target.value)}
+                />
 
-                  {isAdmin && (
-                    <button className="delete-button" onClick={() => deleteJob(job.id)}>
-                      Delete Job
-                    </button>
-                  )}
-                </div>
-              ))}
+                <button className="primary-button" onClick={addJob}>
+                  Add Job
+                </button>
+              </div>
             </div>
           )}
+        </div>
+
+        <div className="right-panel">
+          <div className="jobs-section">
+            <h2>Available Jobs</h2>
+
+            {jobs.length === 0 ? (
+              <div className="empty-state">
+                <p>No jobs available right now. Check back later!</p>
+              </div>
+            ) : (
+              <div className="jobs-grid">
+                {jobs.map((job) => (
+                  <div key={job.id} className="job-card">
+                    <div className="card-header">
+                      <h3 className="job-title">{job.title}</h3>
+                      <p className="company-name">{job.company}</p>
+                    </div>
+
+                    <div className="card-actions">
+                      <a href={job.link} target="_blank" rel="noreferrer" className="apply-link">
+                        Apply Here →
+                      </a>
+                    </div>
+
+                    <div className="status-section">
+                      <p className="status-label">Application Status:</p>
+                      <div className="status-buttons">
+                        {["Applied", "Not Applied", "Interview", "Rejected", "Selected"].map((status) => (
+                          <button
+                            key={status}
+                            className="status-button"
+                            onClick={() => updateStatus(job.id, status)}
+                            style={{
+                              background: applications[job.id] === status ? "#2563eb" : "#374151",
+                              color: applications[job.id] === status ? "white" : "#d1d5db",
+                            }}
+                          >
+                            {status}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {isAdmin && (
+                      <button className="delete-button" onClick={() => deleteJob(job.id)}>
+                        Delete Job
+                      </button>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
