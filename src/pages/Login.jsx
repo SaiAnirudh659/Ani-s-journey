@@ -37,27 +37,27 @@ function Login() {
   const [quoteIndex] = useState(Math.floor(Math.random() * quotes.length));
   const [isLoading, setIsLoading] = useState(false);
 
-  // Handle redirect result and auth state changes
+  // Check if already authenticated on component mount
   useEffect(() => {
     let isMounted = true;
 
-    const handleAuth = async () => {
+    const checkAuthState = async () => {
       try {
-        // First, check for redirect result
+        // Check for redirect result from Google Sign-In
         const result = await getRedirectResult(auth);
         if (result?.user && isMounted) {
-          // Redirect result found, navigate to dashboard
+          console.log("Redirect result received, navigating to dashboard");
           navigate("/dashboard");
           return;
         }
       } catch (error) {
-        console.log("Redirect result error:", error);
+        console.error("Redirect result error:", error);
       }
 
-      // Set up auth state listener for all auth scenarios
+      // Set up auth state listener
       const unsubscribe = onAuthStateChanged(auth, (user) => {
         if (isMounted && user) {
-          // User is authenticated
+          console.log("User authenticated:", user.email);
           navigate("/dashboard");
         }
       });
@@ -65,7 +65,7 @@ function Login() {
       return () => unsubscribe();
     };
 
-    handleAuth();
+    checkAuthState();
 
     return () => {
       isMounted = false;
@@ -77,21 +77,22 @@ function Login() {
       setIsLoading(true);
       const provider = new GoogleAuthProvider();
       
-      // Check if on mobile
-      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
-      
-      if (isMobile) {
-        // Use redirect for mobile
-        await signInWithRedirect(auth, provider);
-      } else {
-        // Use popup for desktop
-        await signInWithPopup(auth, provider);
-        navigate("/dashboard");
-      }
+      // Use redirect for all platforms - more reliable
+      // This will redirect to Google, then back to this app
+      await signInWithRedirect(auth, provider);
+      // Note: After successful auth, the component will unmount and remount with auth state
     } catch (error) {
       setIsLoading(false);
-      alert(error.message);
-      console.log(error);
+      console.error("Google login error:", error);
+      
+      // Better error handling
+      if (error.code === 'auth/popup-blocked') {
+        alert("Popup was blocked. Please enable popups and try again.");
+      } else if (error.code === 'auth/unauthorized-domain') {
+        alert("This domain is not authorized in Firebase. Contact the admin.");
+      } else {
+        alert("Login error: " + (error.message || "Unknown error"));
+      }
     }
   };
 
