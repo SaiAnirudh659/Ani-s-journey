@@ -5,6 +5,7 @@ import {
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
+  onAuthStateChanged,
   RecaptchaVerifier,
   signInWithPhoneNumber,
 } from "firebase/auth";
@@ -36,20 +37,39 @@ function Login() {
   const [quoteIndex] = useState(Math.floor(Math.random() * quotes.length));
   const [isLoading, setIsLoading] = useState(false);
 
-  // Handle redirect result from Google Sign-In
+  // Handle redirect result and auth state changes
   useEffect(() => {
-    const handleRedirectResult = async () => {
+    let isMounted = true;
+
+    const handleAuth = async () => {
       try {
+        // First, check for redirect result
         const result = await getRedirectResult(auth);
-        if (result?.user) {
+        if (result?.user && isMounted) {
+          // Redirect result found, navigate to dashboard
           navigate("/dashboard");
+          return;
         }
       } catch (error) {
-        console.log(error);
-        alert("Authentication failed: " + error.message);
+        console.log("Redirect result error:", error);
       }
+
+      // Set up auth state listener for all auth scenarios
+      const unsubscribe = onAuthStateChanged(auth, (user) => {
+        if (isMounted && user) {
+          // User is authenticated
+          navigate("/dashboard");
+        }
+      });
+
+      return () => unsubscribe();
     };
-    handleRedirectResult();
+
+    handleAuth();
+
+    return () => {
+      isMounted = false;
+    };
   }, [navigate]);
 
   const handleGoogleLogin = async () => {

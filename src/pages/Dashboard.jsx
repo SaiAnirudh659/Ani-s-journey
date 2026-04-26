@@ -170,9 +170,11 @@ function Dashboard() {
     );
   }
 
-  // Redirect to login if not authenticated
+  // If not authenticated after loading is complete, DON'T show message
+  // Just redirect silently
   if (!user) {
-    navigate("/");
+    // Use setTimeout to allow React to render before redirecting
+    setTimeout(() => navigate("/"), 0);
     return null;
   }
 
