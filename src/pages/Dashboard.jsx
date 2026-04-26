@@ -29,6 +29,9 @@ function Dashboard() {
   const [company, setCompany] = useState("");
   const [link, setLink] = useState("");
 
+  const [applyJobsTarget, setApplyJobsTarget] = useState(5);
+  const [applyRemoteJobsTarget, setApplyRemoteJobsTarget] = useState(2);
+
   const fetchJobs = async () => {
     const snapshot = await getDocs(collection(db, "jobs"));
 
@@ -223,11 +226,35 @@ function Dashboard() {
               <ul className="mission-list">
                 <li className="mission-item">
                   <span className="mission-icon">📝</span>
-                  Apply to 5 jobs
+                  <div className="mission-dropdown-container">
+                    <span>Apply to</span>
+                    <select 
+                      className="mission-dropdown"
+                      value={applyJobsTarget}
+                      onChange={(e) => setApplyJobsTarget(Number(e.target.value))}
+                    >
+                      <option value={5}>5</option>
+                      <option value={6}>6</option>
+                      <option value={7}>7</option>
+                    </select>
+                    <span>jobs</span>
+                  </div>
                 </li>
                 <li className="mission-item">
                   <span className="mission-icon">🏠</span>
-                  Apply to 2 remote jobs
+                  <div className="mission-dropdown-container">
+                    <span>Apply to</span>
+                    <select 
+                      className="mission-dropdown"
+                      value={applyRemoteJobsTarget}
+                      onChange={(e) => setApplyRemoteJobsTarget(Number(e.target.value))}
+                    >
+                      <option value={2}>2</option>
+                      <option value={3}>3</option>
+                      <option value={4}>4</option>
+                    </select>
+                    <span>remote jobs</span>
+                  </div>
                 </li>
                 <li className="mission-item">
                   <span className="mission-icon">📊</span>
