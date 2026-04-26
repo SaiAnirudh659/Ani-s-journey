@@ -37,38 +37,36 @@ function Login() {
   const [quoteIndex] = useState(Math.floor(Math.random() * quotes.length));
   const [isLoading, setIsLoading] = useState(false);
 
-  // Check if already authenticated on component mount
+  // Set up auth state listener
   useEffect(() => {
     let isMounted = true;
 
-    const checkAuthState = async () => {
-      try {
-        // Check for redirect result from Google Sign-In
-        const result = await getRedirectResult(auth);
+    // First, check for redirect result
+    getRedirectResult(auth)
+      .then((result) => {
         if (result?.user && isMounted) {
-          console.log("Redirect result received, navigating to dashboard");
+          console.log("Redirect result received:", result.user.email);
           navigate("/dashboard");
-          return;
         }
-      } catch (error) {
+      })
+      .catch((error) => {
         console.error("Redirect result error:", error);
-      }
-
-      // Set up auth state listener
-      const unsubscribe = onAuthStateChanged(auth, (user) => {
-        if (isMounted && user) {
-          console.log("User authenticated:", user.email);
-          navigate("/dashboard");
-        }
       });
 
-      return () => unsubscribe();
-    };
-
-    checkAuthState();
+    // Always set up auth state listener
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (isMounted) {
+        if (user) {
+          console.log("User authenticated from onAuthStateChanged:", user.email);
+          // Add a small delay to ensure Firebase is fully ready
+          setTimeout(() => navigate("/dashboard"), 100);
+        }
+      }
+    });
 
     return () => {
       isMounted = false;
+      unsubscribe();
     };
   }, [navigate]);
 
