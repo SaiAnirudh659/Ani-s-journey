@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   GoogleAuthProvider,
   signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
   RecaptchaVerifier,
   signInWithPhoneNumber,
 } from "firebase/auth";
@@ -32,13 +34,42 @@ function Login() {
   const [otp, setOtp] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
   const [quoteIndex] = useState(Math.floor(Math.random() * quotes.length));
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Handle redirect result from Google Sign-In
+  useEffect(() => {
+    const handleRedirectResult = async () => {
+      try {
+        const result = await getRedirectResult(auth);
+        if (result?.user) {
+          navigate("/dashboard");
+        }
+      } catch (error) {
+        console.log(error);
+        alert("Authentication failed: " + error.message);
+      }
+    };
+    handleRedirectResult();
+  }, [navigate]);
 
   const handleGoogleLogin = async () => {
     try {
+      setIsLoading(true);
       const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      navigate("/dashboard");
+      
+      // Check if on mobile
+      const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+      
+      if (isMobile) {
+        // Use redirect for mobile
+        await signInWithRedirect(auth, provider);
+      } else {
+        // Use popup for desktop
+        await signInWithPopup(auth, provider);
+        navigate("/dashboard");
+      }
     } catch (error) {
+      setIsLoading(false);
       alert(error.message);
       console.log(error);
     }
@@ -119,8 +150,8 @@ function Login() {
 
           <h2>Career Hub</h2>
 
-          <button onClick={handleGoogleLogin} className="google-btn">
-            Continue with Google
+          <button onClick={handleGoogleLogin} className="google-btn" disabled={isLoading}>
+            {isLoading ? "Redirecting..." : "Continue with Google"}
           </button>
 
           <div className="divider">or</div>

@@ -21,6 +21,7 @@ function Dashboard() {
   const navigate = useNavigate();
 
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [jobs, setJobs] = useState([]);
   const [applications, setApplications] = useState({});
   const [isAdmin, setIsAdmin] = useState(false);
@@ -77,6 +78,8 @@ function Dashboard() {
         fetchJobs();
         fetchApplications(currentUser.uid);
       }
+      
+      setLoading(false);
     });
 
     return () => unsubscribe();
@@ -155,8 +158,22 @@ function Dashboard() {
     navigate("/");
   };
 
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="dashboard-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
+        <div style={{ textAlign: 'center' }}>
+          <div style={{ fontSize: '40px', marginBottom: '20px' }}>⏳</div>
+          <div style={{ fontSize: '16px', color: '#e2e8f0' }}>Loading...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Redirect to login if not authenticated
   if (!user) {
-    return <div className="dashboard-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>Please login first</div>;
+    navigate("/");
+    return null;
   }
 
   return (
