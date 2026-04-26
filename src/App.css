@@ -226,22 +226,107 @@ body {
 @media (max-width: 768px) {
   .login-container {
     flex-direction: column;
+    border-radius: 12px;
   }
 
   .quote-panel {
-    min-height: 300px;
-    padding: 40px 30px;
+    min-height: auto;
+    padding: 30px 20px;
+    flex: 0;
   }
 
   .quote-text {
-    font-size: 22px;
+    font-size: 18px;
+    line-height: 1.4;
   }
 
   .login-card {
-    padding: 40px 30px;
+    padding: 30px 20px;
+    flex: 1;
+  }
+
+  .login-card h1 {
+    font-size: 24px;
+  }
+
+  .login-card h2 {
+    font-size: 16px;
+    margin-bottom: 20px;
+  }
+
+  .google-btn,
+  .phone-btn,
+  .verify-btn {
+    padding: 12px;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .phone-input {
+    padding: 12px;
+    font-size: 14px;
+    margin-top: 10px;
+  }
+
+  .flag-route {
+    font-size: 18px;
+    padding: 4px 8px;
+  }
+
+  .design-accent-top,
+  .design-accent-bottom {
+    display: none;
+  }
+}
+
+@media (max-width: 480px) {
+  .login-page {
+    padding: 10px;
+  }
+
+  .login-container {
+    border-radius: 8px;
+  }
+
+  .quote-panel {
+    padding: 20px 15px;
   }
 
   .quote-text {
+    font-size: 16px;
+  }
+
+  .login-card {
+    padding: 20px 15px;
+  }
+
+  .login-card h1 {
     font-size: 20px;
+  }
+
+  .brand-title {
+    gap: 8px;
+  }
+
+  .login-card h2 {
+    font-size: 14px;
+    margin-bottom: 15px;
+  }
+
+  .divider {
+    margin: 15px 0;
+    font-size: 12px;
+  }
+
+  .google-btn,
+  .phone-btn,
+  .verify-btn {
+    padding: 10px;
+    font-size: 13px;
+  }
+
+  .phone-input {
+    padding: 10px;
+    font-size: 13px;
   }
 }
