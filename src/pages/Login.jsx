@@ -1,9 +1,11 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   GoogleAuthProvider,
   signInWithPopup,
   signInWithRedirect,
   getRedirectResult,
+  onAuthStateChanged,
   RecaptchaVerifier,
   signInWithPhoneNumber,
 } from "firebase/auth";
@@ -51,12 +53,22 @@ function Login() {
         console.error("Redirect result error:", error);
       });
 
-    // No need for onAuthStateChanged here since App handles routing
+    // Always set up auth state listener
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      if (isMounted) {
+        if (user) {
+          console.log("User authenticated from onAuthStateChanged:", user.email);
+          // Add a small delay to ensure Firebase is fully ready
+          setTimeout(() => navigate("/dashboard", { replace: true }), 100);
+        }
+      }
+    });
 
     return () => {
       isMounted = false;
+      unsubscribe();
     };
-  }, []);
+  }, [navigate]);
 
   const handleGoogleLogin = async () => {
     try {
@@ -66,8 +78,7 @@ function Login() {
       const result = await signInWithPopup(auth, provider);
 
       if (result.user) {
-        // Navigation will be handled by App component's auth state
-        console.log("Google login successful:", result.user.email);
+        navigate("/dashboard", { replace: true });
       }
     } catch (error) {
       console.error("Google login error:", error);
@@ -139,7 +150,7 @@ function Login() {
       }
 
       await confirmationResult.confirm(otp);
-      // Navigation will be handled by App component's auth state
+      navigate("/dashboard");
     } catch (error) {
       alert("Invalid OTP");
       console.log(error);

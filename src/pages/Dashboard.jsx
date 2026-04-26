@@ -177,16 +177,12 @@ function Dashboard() {
     );
   }
 
-  // Since routing is protected at App level, user should always be authenticated here
+  // If not authenticated after loading is complete, DON'T show message
+  // Just redirect silently
   if (!user) {
-    return (
-      <div className="dashboard-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-        <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '40px', marginBottom: '20px' }}>⚠️</div>
-          <div style={{ fontSize: '16px', color: '#e2e8f0' }}>Authentication error. Please refresh the page.</div>
-        </div>
-      </div>
-    );
+    // Use setTimeout to allow React to render before redirecting
+    setTimeout(() => navigate("/"), 0);
+    return null;
   }
 
   return (
