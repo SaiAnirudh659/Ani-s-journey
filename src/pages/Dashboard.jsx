@@ -63,22 +63,29 @@ function Dashboard() {
       if (currentUser) {
         setIsAdmin(currentUser.email === ADMIN_EMAIL);
 
-        await setDoc(
-          doc(db, "users", currentUser.uid),
-          {
-            uid: currentUser.uid,
-            name: currentUser.displayName || "No Name",
-            email: currentUser.email || "No Email",
-            phone: currentUser.phoneNumber || "No Phone",
-            lastLogin: serverTimestamp(),
-          },
-          { merge: true }
-        );
+        try {
+          await setDoc(
+            doc(db, "users", currentUser.uid),
+            {
+              uid: currentUser.uid,
+              name: currentUser.displayName || "No Name",
+              email: currentUser.email || "No Email",
+              phone: currentUser.phoneNumber || "No Phone",
+              lastLogin: serverTimestamp(),
+            },
+            { merge: true }
+          );
 
-        fetchJobs();
-        fetchApplications(currentUser.uid);
+          await Promise.all([
+            fetchJobs(),
+            fetchApplications(currentUser.uid),
+          ]);
+        } catch (error) {
+          console.error("Dashboard data load error:", error);
+          alert("You are signed in, but dashboard data could not load. Please check Firestore rules.");
+        }
       }
-      
+
       setLoading(false);
     });
 

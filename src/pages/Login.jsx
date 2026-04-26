@@ -34,7 +34,7 @@ function Login() {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [confirmationResult, setConfirmationResult] = useState(null);
-  const [quoteIndex] = useState(Math.floor(Math.random() * quotes.length));
+  const [quoteIndex] = useState(() => Math.floor(Math.random() * quotes.length));
   const [isLoading, setIsLoading] = useState(false);
 
   // Set up auth state listener
@@ -46,7 +46,7 @@ function Login() {
       .then((result) => {
         if (result?.user && isMounted) {
           console.log("Redirect result received:", result.user.email);
-          navigate("/dashboard");
+          navigate("/dashboard", { replace: true });
         }
       })
       .catch((error) => {
@@ -59,7 +59,7 @@ function Login() {
         if (user) {
           console.log("User authenticated from onAuthStateChanged:", user.email);
           // Add a small delay to ensure Firebase is fully ready
-          setTimeout(() => navigate("/dashboard"), 100);
+          setTimeout(() => navigate("/dashboard", { replace: true }), 100);
         }
       }
     });
@@ -74,23 +74,36 @@ function Login() {
     try {
       setIsLoading(true);
       const provider = new GoogleAuthProvider();
-      
-      // Use redirect for all platforms - more reliable
-      // This will redirect to Google, then back to this app
-      await signInWithRedirect(auth, provider);
-      // Note: After successful auth, the component will unmount and remount with auth state
+
+      const result = await signInWithPopup(auth, provider);
+
+      if (result.user) {
+        navigate("/dashboard", { replace: true });
+      }
     } catch (error) {
-      setIsLoading(false);
       console.error("Google login error:", error);
-      
-      // Better error handling
-      if (error.code === 'auth/popup-blocked') {
-        alert("Popup was blocked. Please enable popups and try again.");
+
+      if (
+        error.code === "auth/popup-blocked" ||
+        error.code === "auth/operation-not-supported-in-this-environment"
+      ) {
+        try {
+          const provider = new GoogleAuthProvider();
+          await signInWithRedirect(auth, provider);
+          return;
+        } catch (redirectError) {
+          console.error("Google redirect login error:", redirectError);
+          alert("Login error: " + (redirectError.message || "Unknown error"));
+        }
+      } else if (error.code === "auth/popup-closed-by-user") {
+        alert("Google login was cancelled. Please try again.");
       } else if (error.code === 'auth/unauthorized-domain') {
         alert("This domain is not authorized in Firebase. Contact the admin.");
       } else {
         alert("Login error: " + (error.message || "Unknown error"));
       }
+
+      setIsLoading(false);
     }
   };
 
