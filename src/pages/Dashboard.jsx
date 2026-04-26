@@ -232,6 +232,7 @@ function Dashboard() {
                       className="mission-dropdown"
                       value={applyJobsTarget}
                       onChange={(e) => setApplyJobsTarget(Number(e.target.value))}
+                      disabled={!isAdmin}
                     >
                       <option value={5}>5</option>
                       <option value={6}>6</option>
@@ -248,6 +249,7 @@ function Dashboard() {
                       className="mission-dropdown"
                       value={applyRemoteJobsTarget}
                       onChange={(e) => setApplyRemoteJobsTarget(Number(e.target.value))}
+                      disabled={!isAdmin}
                     >
                       <option value={2}>2</option>
                       <option value={3}>3</option>
