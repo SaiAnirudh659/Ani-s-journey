@@ -349,6 +349,25 @@
   transform: scale(1.1);
 }
 
+.delete-app-button {
+  padding: 6px;
+  border-radius: 6px;
+  border: none;
+  background: rgba(239, 68, 68, 0.1);
+  color: #fca5a5;
+  cursor: pointer;
+  font-size: 14px;
+  transition: all 0.3s ease;
+  opacity: 0.7;
+}
+
+.delete-app-button:hover {
+  background: rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  opacity: 1;
+  transform: scale(1.1);
+}
+
 .job-actions {
   margin-bottom: 16px;
 }

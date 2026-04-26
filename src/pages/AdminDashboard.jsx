@@ -88,6 +88,23 @@ function AdminDashboard() {
     }
   };
 
+  const deleteApplication = async (appId) => {
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this application?"
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      await deleteDoc(doc(db, "applications", appId));
+      alert("Application deleted!");
+      fetchAdminData();
+    } catch (error) {
+      console.log(error);
+      alert("Error deleting application");
+    }
+  };
+
   if (authLoading) {
     return (
       <div className="admin-dashboard-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
@@ -195,6 +212,7 @@ function AdminDashboard() {
                   <th>Company</th>
                   <th>Status</th>
                   <th>Updated</th>
+                  <th>Action</th>
                 </tr>
               </thead>
               <tbody>
@@ -211,6 +229,15 @@ function AdminDashboard() {
                       </span>
                     </td>
                     <td>{app.updatedAt?.toDate?.()?.toLocaleDateString() || "N/A"}</td>
+                    <td>
+                      <button
+                        className="delete-app-button"
+                        onClick={() => deleteApplication(app.id)}
+                        title="Delete this application"
+                      >
+                        🗑️
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
