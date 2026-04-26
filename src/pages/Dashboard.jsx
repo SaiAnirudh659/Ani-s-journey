@@ -188,7 +188,7 @@ function Dashboard() {
         {/* Sidebar */}
         <div className="dashboard-sidebar">
           <div className="sidebar-section">
-            <h3>📊 Overview</h3>
+            <h3>Overview</h3>
             <div className="stats-grid">
               <div className="stat-card">
                 <div className="stat-icon">🎯</div>
@@ -329,7 +329,7 @@ function Dashboard() {
                       <h3 className="job-title">{job.title}</h3>
                       <div className="job-actions">
                         <a href={job.link} target="_blank" rel="noreferrer" className="apply-link">
-                          🚀 Apply Now
+                          Apply Now
                         </a>
                       </div>
                     </div>
