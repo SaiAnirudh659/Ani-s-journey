@@ -50,7 +50,11 @@ function Dashboard() {
 
     const apps = {};
     snapshot.docs.forEach((docSnap) => {
-      apps[docSnap.data().jobId] = docSnap.data().status;
+      const data = docSnap.data();
+      apps[data.jobId] = {
+        status: data.status,
+        updatedAt: data.updatedAt,
+      };
     });
 
     setApplications(apps);
@@ -156,7 +160,7 @@ function Dashboard() {
 
     setApplications((prev) => ({
       ...prev,
-      [jobId]: status,
+      [jobId]: { status, updatedAt: new Date() },
     }));
   };
 
@@ -220,7 +224,7 @@ function Dashboard() {
                 <div className="stat-icon">🎯</div>
                 <div className="stat-content">
                   <div className="stat-number">
-                    {Object.values(applications).filter(status => status === 'Applied').length}
+                    {Object.values(applications).filter(app => app.status === 'Applied').length}
                   </div>
                   <div className="stat-label">Jobs Applied</div>
                 </div>
@@ -229,7 +233,7 @@ function Dashboard() {
                 <div className="stat-icon">⏳</div>
                 <div className="stat-content">
                   <div className="stat-number">
-                    {Object.values(applications).filter(status => status === 'Interview').length}
+                    {Object.values(applications).filter(app => app.status === 'Interview').length}
                   </div>
                   <div className="stat-label">Interviews</div>
                 </div>
@@ -238,9 +242,33 @@ function Dashboard() {
                 <div className="stat-icon">✅</div>
                 <div className="stat-content">
                   <div className="stat-number">
-                    {Object.values(applications).filter(status => status === 'Selected').length}
+                    {Object.values(applications).filter(app => app.status === 'Selected').length}
                   </div>
                   <div className="stat-label">Selected</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="sidebar-section">
+            <h3>📅 Recent Activity</h3>
+            <div className="stats-grid">
+              <div className="stat-card">
+                <div className="stat-icon">📆</div>
+                <div className="stat-content">
+                  <div className="stat-number">
+                    {Object.values(applications).filter(app => app.status === 'Applied' && app.updatedAt?.toDate?.().toDateString() === new Date().toDateString()).length}
+                  </div>
+                  <div className="stat-label">Applied Today</div>
+                </div>
+              </div>
+              <div className="stat-card">
+                <div className="stat-icon">📅</div>
+                <div className="stat-content">
+                  <div className="stat-number">
+                    {Object.values(applications).filter(app => app.status === 'Applied' && app.updatedAt?.toDate?.().toDateString() === new Date(Date.now() - 86400000).toDateString()).length}
+                  </div>
+                  <div className="stat-label">Applied Yesterday</div>
                 </div>
               </div>
             </div>
@@ -364,13 +392,15 @@ function Dashboard() {
 
                     <div className="job-status">
                       <div className="status-label">
-                        Application Status: <span className="current-status">{applications[job.id] || 'Not Applied'}</span>
+                        Application Status: <span className="current-status">
+                          {applications[job.id] ? `${applications[job.id].status} on ${applications[job.id].updatedAt?.toDate?.()?.toLocaleDateString() || applications[job.id].updatedAt?.toLocaleDateString() || 'N/A'}` : 'Not Applied'}
+                        </span>
                       </div>
                       <div className="status-buttons">
                         {["Applied", "Not Applied", "Interview", "Rejected", "Selected"].map((status) => (
                           <button
                             key={status}
-                            className={`status-button ${applications[job.id] === status ? 'active' : ''}`}
+                            className={`status-button ${applications[job.id]?.status === status ? 'active' : ''}`}
                             onClick={() => updateStatus(job.id, status)}
                           >
                             {status}

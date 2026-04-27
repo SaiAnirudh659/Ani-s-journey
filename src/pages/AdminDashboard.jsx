@@ -121,16 +121,14 @@ function AdminDashboard() {
     );
   }
 
-  if (user.email !== ADMIN_EMAIL) {
-    return (
-      <div className="admin-dashboard-page" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh' }}>
-        <div style={{ textAlign: 'center' }}>
-          <h1 style={{ color: '#ef4444', marginBottom: '16px' }}>Access Denied ❌</h1>
-          <p style={{ color: '#94a3b8' }}>You are not allowed to view this page.</p>
-        </div>
-      </div>
-    );
-  }
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(today.getDate() - 1);
+  const todayStr = today.toDateString();
+  const yesterdayStr = yesterday.toDateString();
+
+  const todaysApps = applications.filter(app => app.updatedAt?.toDate?.().toDateString() === todayStr);
+  const yesterdaysApps = applications.filter(app => app.updatedAt?.toDate?.().toDateString() === yesterdayStr);
 
   return (
     <div className="admin-dashboard-page">
@@ -192,57 +190,124 @@ function AdminDashboard() {
           </div>
         </div>
 
-        {/* Applications Table */}
+        {/* Today's Applications */}
         <div className="admin-section">
           <div className="section-header">
-            <h2>📊 All Applications</h2>
+            <h2>📅 Today's Applications ({today.toLocaleDateString()})</h2>
             <div className="section-stats">
-              <span>{applications.length} total applications</span>
+              <span>{todaysApps.length} applications</span>
             </div>
           </div>
 
-          <div className="table-container">
-            <table className="admin-table">
-              <thead>
-                <tr>
-                  <th>User</th>
-                  <th>Email</th>
-                  <th>Phone</th>
-                  <th>Job Title</th>
-                  <th>Company</th>
-                  <th>Status</th>
-                  <th>Updated</th>
-                  <th>Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {applications.map((app) => (
-                  <tr key={app.id}>
-                    <td>{app.userName}</td>
-                    <td>{app.userEmail}</td>
-                    <td>{app.userPhone}</td>
-                    <td>{jobs[app.jobId]?.title || "Unknown Job"}</td>
-                    <td>{jobs[app.jobId]?.company || "Unknown Company"}</td>
-                    <td>
-                      <span className={`status-badge status-${app.status.toLowerCase().replace(' ', '-')}`}>
-                        {app.status}
-                      </span>
-                    </td>
-                    <td>{app.updatedAt?.toDate?.()?.toLocaleDateString() || "N/A"}</td>
-                    <td>
-                      <button
-                        className="delete-app-button"
-                        onClick={() => deleteApplication(app.id)}
-                        title="Delete this application"
-                      >
-                        🗑️
-                      </button>
-                    </td>
+          {todaysApps.length > 0 && (
+            <div className="table-container">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Status</th>
+                    <th>Updated</th>
+                    <th>Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {todaysApps.map((app) => (
+                    <tr key={app.id}>
+                      <td>{app.userName}</td>
+                      <td>{app.userEmail}</td>
+                      <td>{app.userPhone}</td>
+                      <td>{jobs[app.jobId]?.title || "Unknown Job"}</td>
+                      <td>{jobs[app.jobId]?.company || "Unknown Company"}</td>
+                      <td>
+                        <span className={`status-badge status-${app.status.toLowerCase().replace(' ', '-')}`}>
+                          {app.status}
+                        </span>
+                      </td>
+                      <td>{app.updatedAt?.toDate?.()?.toLocaleDateString() || "N/A"}</td>
+                      <td>
+                        <button
+                          className="delete-app-button"
+                          onClick={() => deleteApplication(app.id)}
+                          title="Delete this application"
+                        >
+                          🗑️
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {todaysApps.length === 0 && (
+            <div className="empty-state">
+              <p>No applications today yet.</p>
+            </div>
+          )}
+        </div>
+
+        {/* Yesterday's Applications */}
+        <div className="admin-section">
+          <div className="section-header">
+            <h2>📅 Yesterday's Applications ({yesterday.toLocaleDateString()})</h2>
+            <div className="section-stats">
+              <span>{yesterdaysApps.length} applications</span>
+            </div>
           </div>
+
+          {yesterdaysApps.length > 0 && (
+            <div className="table-container">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Email</th>
+                    <th>Phone</th>
+                    <th>Job Title</th>
+                    <th>Company</th>
+                    <th>Status</th>
+                    <th>Updated</th>
+                    <th>Action</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {yesterdaysApps.map((app) => (
+                    <tr key={app.id}>
+                      <td>{app.userName}</td>
+                      <td>{app.userEmail}</td>
+                      <td>{app.userPhone}</td>
+                      <td>{jobs[app.jobId]?.title || "Unknown Job"}</td>
+                      <td>{jobs[app.jobId]?.company || "Unknown Company"}</td>
+                      <td>
+                        <span className={`status-badge status-${app.status.toLowerCase().replace(' ', '-')}`}>
+                          {app.status}
+                        </span>
+                      </td>
+                      <td>{app.updatedAt?.toDate?.()?.toLocaleDateString() || "N/A"}</td>
+                      <td>
+                        <button
+                          className="delete-app-button"
+                          onClick={() => deleteApplication(app.id)}
+                          title="Delete this application"
+                        >
+                          🗑️
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+          {yesterdaysApps.length === 0 && (
+            <div className="empty-state">
+              <p>No applications yesterday.</p>
+            </div>
+          )}
         </div>
 
         {/* Jobs Management */}
